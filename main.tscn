@@ -1,6 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://druxfjfb3ac40"]
+[gd_scene load_steps=37 format=3 uid="uid://druxfjfb3ac40"]
 
 [ext_resource type="Script" path="res://CharacterBody3D.cs" id="1_hksad"]
+[ext_resource type="Script" path="res://Obstacle.cs" id="2_ot33o"]
+[ext_resource type="Shader" path="res://dissolve.gdshader" id="3_vbef0"]
+[ext_resource type="QuadMesh" uid="uid://4nsoecmw3gqn" path="res://party.tres" id="4_jda1m"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tr11c"]
 sky_top_color = Color(0.243137, 0.388235, 0.909804, 1)
@@ -12,10 +15,7 @@ ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
 sky_material = SubResource("ProceduralSkyMaterial_tr11c")
 
 [sub_resource type="Environment" id="Environment_hgv4w"]
-background_mode = 2
 sky = SubResource("Sky_t437m")
-tonemap_mode = 2
-glow_enabled = true
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_txbyk"]
 
@@ -23,9 +23,203 @@ glow_enabled = true
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_xrpct"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0ol6u"]
+shading_mode = 2
+albedo_color = Color(0.380392, 0.380392, 0.380392, 1)
+
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wd88o"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_j56uq"]
+size = Vector3(1, 5.70492, 8.71343)
+
+[sub_resource type="Animation" id="Animation_5t8pv"]
+resource_name = "burn"
+step = 1.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:FadeState")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.969217),
+"transitions": PackedFloat32Array(1, 0.392292),
+"update": 0,
+"values": [1.0, 0.0]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("GPUParticles3D")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0270736),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"restart"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_d17n6"]
+resource_name = "reassemble"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:FadeState")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(2.2, 2.7),
+"transitions": PackedFloat32Array(0.965936, 0.0172217),
+"update": 0,
+"values": [0.0, 1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_7drkc"]
+_data = {
+"burn": SubResource("Animation_5t8pv"),
+"reassemble": SubResource("Animation_d17n6")
+}
+
+[sub_resource type="Curve" id="Curve_848gq"]
+min_value = -360.0
+max_value = 360.0
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_x3wxm"]
+curve = SubResource("Curve_848gq")
+
+[sub_resource type="Gradient" id="Gradient_ujyok"]
+offsets = PackedFloat32Array(0, 0.12518, 0.267626, 0.952518)
+colors = PackedColorArray(1, 1, 1, 1, 0.858824, 0.286275, 0.533333, 1, 0.694417, 0.677457, 0, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_747gd"]
+gradient = SubResource("Gradient_ujyok")
+use_hdr = true
+
+[sub_resource type="Curve" id="Curve_envf6"]
+min_value = -1.0
+_data = [Vector2(0, -0.325153), 0.0, 0.0, 0, 0, Vector2(0.449256, 0.889571), -4.53374, -4.53374, 0, 0, Vector2(0.976996, -0.276074), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_krn4q"]
+curve = SubResource("Curve_envf6")
+
+[sub_resource type="Curve" id="Curve_l2gpk"]
+bake_resolution = 96
+_data = [Vector2(0.0216509, 0.662577), 0.0, 0.0, 0, 0, Vector2(0.526387, 0.93865), 0.0, 0.0, 0, 0, Vector2(0.975643, 0.251534), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_0q3i5"]
+curve = SubResource("Curve_l2gpk")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_fhbj4"]
+lifetime_randomness = 1.0
+emission_shape = 3
+emission_box_extents = Vector3(1, 3, 7)
+particle_flag_align_y = true
+direction = Vector3(1, 1, 1)
+gravity = Vector3(1, 5, 1)
+initial_velocity_max = 6.47
+angular_velocity_curve = SubResource("CurveTexture_x3wxm")
+linear_accel_min = -4.95
+linear_accel_max = 4.4
+radial_accel_min = -9.34
+radial_accel_max = 7.69
+tangential_accel_min = -10.0
+tangential_accel_max = 10.0
+angle_min = -186.0
+angle_max = 37.5
+scale_min = 0.22
+scale_max = 1.9
+scale_curve = SubResource("CurveTexture_0q3i5")
+color = Color(1, 0.431373, 0, 1)
+color_ramp = SubResource("GradientTexture1D_747gd")
+hue_variation_min = -0.06
+hue_variation_max = 0.1
+hue_variation_curve = SubResource("CurveTexture_krn4q")
+turbulence_enabled = true
+turbulence_noise_strength = 1.05
+turbulence_noise_scale = 1.69
+turbulence_noise_speed_random = 0.52
+turbulence_influence_max = 0.2
+
+[sub_resource type="Gradient" id="Gradient_iotmq"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0.2097, 0.704708, 0.880171)
+colors = PackedColorArray(0.807843, 0.239216, 0, 1, 0.858984, 0.820763, 0.169345, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_3utq1"]
+gradient = SubResource("Gradient_iotmq")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_jjtw7"]
+noise_type = 2
+frequency = 0.0074
+cellular_jitter = 0.7
+cellular_return_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_x42fh"]
+noise = SubResource("FastNoiseLite_jjtw7")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d7we6"]
+render_priority = 0
+shader = ExtResource("3_vbef0")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Plane(1, 0, 0, 0)
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/emission_color = SubResource("GradientTexture1D_3utq1")
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_x42fh")
+
+[sub_resource type="BoxMesh" id="BoxMesh_hhix4"]
+material = SubResource("ShaderMaterial_d7we6")
+
+[sub_resource type="BoxMesh" id="BoxMesh_ixc3a"]
+
+[sub_resource type="Curve3D" id="Curve3D_6ohaf"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0.039, 1, 0.013, 0, 0, 0, 0, 0, 0, -14.502, 1, 0.428, 0.206322, -0.216463, 5.15424, -0.206322, 0.216463, -5.15424, -18.723, 1, -4.348, 0, 0, 0, 0, 0, 0, -14.282, 1, -9.504, 0, 0, 0, 0, 0, 0, 17.0583, 1.30374, -9.37614, 0.47854, -0.000570416, -4.49095, -0.47854, 0.000570416, 4.49095, 20.0622, 1.17327, -4.10759, 0, 0, 0, 0, 0, 0, 16.492, 1, 0.592, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 8
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rumt1"]
+size = Vector3(1, 5.70492, 5.71461)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bb2e8"]
+size = Vector3(9.14822, 1, 8.26837)
+
+[sub_resource type="Curve3D" id="Curve3D_xtef2"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -1.38785, 1.07676, -0.415657, 0, 0, 0, 0, 0, 0, -3.24844, 0.814819, 6.82534, 0.206322, -0.216463, 5.15424, -0.206322, 0.216463, -5.15424, -12.852, 2.69893, 0.113548, 0, 0, 0, 0, 0, 0, -10.4078, 2.14631, -8.92541, 0, 0, 0, 0, 0, 0, 10.5444, 1.64868, -8.82346, 0.47854, -0.000570416, -4.49095, -0.47854, 0.000570416, 4.49095, 10.2297, 1.67804, 3.90226, 0, 0, 0, 0, 0, 0, -1.07314, 1.92024, 6.55159, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 8
+
 [node name="Node3D" type="Node3D"]
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 231.0
+offset_bottom = 199.0
+
+[node name="Label" type="Label" parent="Control"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Click and Drag to Pan Camera.
+WASD or Arrows to Move"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_hgv4w")
@@ -33,6 +227,10 @@ environment = SubResource("Environment_hgv4w")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
 shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.535104, 0.844786, 0, -0.844786, 0.535104, 0, 10.0144, 4.6616)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="."]
 script = ExtResource("1_hksad")
@@ -45,15 +243,543 @@ shape = SubResource("CapsuleShape3D_txbyk")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.23728, 0)
 mesh = SubResource("CapsuleMesh_bt6j3")
 
-[node name="Camera3D" type="Camera3D" parent="."]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.535104, 0.844786, 0, -0.844786, 0.535104, 0, 10.0144, 4.6616)
+[node name="Floor" type="StaticBody3D" parent="."]
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
-transform = Transform3D(28.1794, 0, 0, 0, 1, 0, 0, 0, 26.6125, 0, 0, 0)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+transform = Transform3D(28.1794, 0, 0, 0, 1, 0, 0, 0, 55.5033, 0, 0, 0)
 mesh = SubResource("PlaneMesh_xrpct")
+surface_material_override/0 = SubResource("StandardMaterial3D_0ol6u")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
 shape = SubResource("WorldBoundaryShape3D_wd88o")
+
+[node name="NPC_WALL" type="Node3D" parent="."]
+
+[node name="Obstacle4" type="StaticBody3D" parent="NPC_WALL"]
+transform = Transform3D(-0.116394, 0, 0.993203, 0, 1, 0, -0.993203, 0, -0.116394, -0.0954051, 3.32439, -42.1785)
+script = ExtResource("2_ot33o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_WALL/Obstacle4"]
+transform = Transform3D(0.995771, 0, -0.0918666, 0, 1, 0, 0.0918666, 0, 0.995771, -0.0339203, 0.481375, -0.202364)
+shape = SubResource("BoxShape3D_j56uq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="NPC_WALL/Obstacle4"]
+libraries = {
+"": SubResource("AnimationLibrary_7drkc")
+}
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="NPC_WALL/Obstacle4"]
+transform = Transform3D(0.997015, -7.98532e-06, -0.0771535, 1.28895e-06, 1, -8.72016e-05, 0.0771535, 8.68951e-05, 0.997014, -0.38739, 1.29335, -0.459785)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NPC_WALL/Obstacle4"]
+transform = Transform3D(0.906431, 0, -0.895532, 0, 5.64517, 0, 0.087998, 0, 9.22449, -0.0264206, 0.432385, 1.66893e-05)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="NPC_WALL/Obstacle4"]
+transform = Transform3D(1.02431, 0, -0.999302, 0, 1, 0, 0.108074, 0, 9.47117, 0.0133667, -2.8454, 0.00937366)
+mesh = SubResource("BoxMesh_ixc3a")
+
+[node name="Obstacle5" type="StaticBody3D" parent="NPC_WALL"]
+transform = Transform3D(-0.116394, 0, 0.993203, 0, 1, 0, -0.993203, 0, -0.116394, -9.84983, 3.23386, -42.1337)
+script = ExtResource("2_ot33o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_WALL/Obstacle5"]
+transform = Transform3D(0.993296, 0, -0.115596, 0, 1, 0, 0.115596, 0, 0.993296, 0.011425, 0.481375, -0.197061)
+shape = SubResource("BoxShape3D_j56uq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="NPC_WALL/Obstacle5"]
+libraries = {
+"": SubResource("AnimationLibrary_7drkc")
+}
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="NPC_WALL/Obstacle5"]
+transform = Transform3D(0.997015, -7.98532e-06, -0.0771535, 1.28895e-06, 1, -8.72016e-05, 0.0771535, 8.68951e-05, 0.997014, -0.38739, 1.29335, -0.459785)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NPC_WALL/Obstacle5"]
+transform = Transform3D(0.906431, 0, -0.895532, 0, 5.64517, 0, 0.087998, 0, 9.22449, -0.0264206, 0.432385, 1.66893e-05)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="NPC_WALL/Obstacle5"]
+transform = Transform3D(1.02431, 0, -0.999302, 0, 1, 0, 0.108074, 0, 9.47117, 0.0133667, -2.8454, 0.00937366)
+mesh = SubResource("BoxMesh_ixc3a")
+
+[node name="Obstacle6" type="StaticBody3D" parent="NPC_WALL"]
+transform = Transform3D(-0.0892074, 0, 0.996013, 0, 1, 0, -0.996013, 0, -0.0892074, 9.68554, 3.25234, -42.1337)
+script = ExtResource("2_ot33o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_WALL/Obstacle6"]
+transform = Transform3D(0.993296, 0, -0.115596, 0, 1, 0, 0.115596, 0, 0.993296, 0.011425, 0.481375, -0.197061)
+shape = SubResource("BoxShape3D_j56uq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="NPC_WALL/Obstacle6"]
+libraries = {
+"": SubResource("AnimationLibrary_7drkc")
+}
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="NPC_WALL/Obstacle6"]
+transform = Transform3D(0.997015, -7.98532e-06, -0.0771535, 1.28895e-06, 1, -8.72016e-05, 0.0771535, 8.68951e-05, 0.997014, -0.38739, 1.29335, -0.459785)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NPC_WALL/Obstacle6"]
+transform = Transform3D(0.906431, 0, -0.895532, 0, 5.64517, 0, 0.087998, 0, 9.22449, -0.0264206, 0.432385, 1.66893e-05)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="NPC_WALL/Obstacle6"]
+transform = Transform3D(1.02431, 0, -0.999302, 0, 1, 0, 0.108074, 0, 9.47117, 0.0133667, -2.8454, 0.00937366)
+mesh = SubResource("BoxMesh_ixc3a")
+
+[node name="NPC" type="CharacterBody3D" parent="NPC_WALL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -37.6816)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_WALL/NPC"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.23728, 0)
+shape = SubResource("CapsuleShape3D_txbyk")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NPC_WALL/NPC"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.23728, 0)
+mesh = SubResource("CapsuleMesh_bt6j3")
+
+[node name="Path3D" type="Path3D" parent="NPC_WALL/NPC"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.52158)
+curve = SubResource("Curve3D_6ohaf")
+
+[node name="PathFollow3D" type="PathFollow3D" parent="NPC_WALL/NPC/Path3D"]
+
+[node name="NPC_WALL2" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 72.7145)
+
+[node name="Obstacle4" type="StaticBody3D" parent="NPC_WALL2"]
+transform = Transform3D(-0.116394, 0, 0.993203, 0, 1, 0, -0.993203, 0, -0.116394, 0.0879169, 3.32439, -42.1785)
+script = ExtResource("2_ot33o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_WALL2/Obstacle4"]
+transform = Transform3D(0.993296, 0, -0.115596, 0, 1, 0, 0.115596, 0, 0.993296, 0.011425, 0.481375, -0.197061)
+shape = SubResource("BoxShape3D_j56uq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="NPC_WALL2/Obstacle4"]
+libraries = {
+"": SubResource("AnimationLibrary_7drkc")
+}
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="NPC_WALL2/Obstacle4"]
+transform = Transform3D(0.997015, -7.98532e-06, -0.0771535, 1.28895e-06, 1, -8.72016e-05, 0.0771535, 8.68951e-05, 0.997014, -0.38739, 1.29335, -0.459785)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NPC_WALL2/Obstacle4"]
+transform = Transform3D(0.906431, 0, -0.895532, 0, 5.64517, 0, 0.087998, 0, 9.22449, -0.0264206, 0.432385, 1.66893e-05)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="NPC_WALL2/Obstacle4"]
+transform = Transform3D(1.02431, 0, -0.999302, 0, 1, 0, 0.108074, 0, 9.47117, 0.0133667, -2.8454, 0.00937366)
+mesh = SubResource("BoxMesh_ixc3a")
+
+[node name="Obstacle8" type="StaticBody3D" parent="NPC_WALL2"]
+transform = Transform3D(-0.116394, 0, 0.993203, 0, 1, 0, -0.993203, 0, -0.116394, 2.84759, 3.32439, -32.8753)
+script = ExtResource("2_ot33o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_WALL2/Obstacle8"]
+transform = Transform3D(0.993364, 0, -0.115007, 0, 1, 0, 0.115007, 0, 0.993364, -0.00634003, 0.481375, -0.0456023)
+shape = SubResource("BoxShape3D_rumt1")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="NPC_WALL2/Obstacle8"]
+libraries = {
+"": SubResource("AnimationLibrary_7drkc")
+}
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="NPC_WALL2/Obstacle8"]
+transform = Transform3D(0.997015, -7.98532e-06, -0.0771535, 1.28895e-06, 1, -8.72016e-05, 0.0771535, 8.68951e-05, 0.997014, -0.38739, 1.29335, -0.459785)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NPC_WALL2/Obstacle8"]
+transform = Transform3D(0.913147, 0, -0.561805, 0, 5.64517, 0, 0.08865, 0, 5.78691, -0.0264206, 0.432385, 1.7643e-05)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="NPC_WALL2/Obstacle8"]
+transform = Transform3D(1.02865, 0, -0.631636, 0, 1, 0, 0.108533, 0, 5.98651, 0.0133667, -2.8454, 0.0093739)
+mesh = SubResource("BoxMesh_ixc3a")
+
+[node name="Obstacle5" type="StaticBody3D" parent="NPC_WALL2"]
+transform = Transform3D(-0.988871, 0, -0.148776, 0, 1, 0, 0.148776, 0, -0.988871, -4.87024, 3.23386, -37.9039)
+script = ExtResource("2_ot33o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_WALL2/Obstacle5"]
+transform = Transform3D(0.993296, 0, -0.115596, 0, 1, 0, 0.115596, 0, 0.993296, 0.011425, 0.481375, -0.197061)
+shape = SubResource("BoxShape3D_j56uq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="NPC_WALL2/Obstacle5"]
+libraries = {
+"": SubResource("AnimationLibrary_7drkc")
+}
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="NPC_WALL2/Obstacle5"]
+transform = Transform3D(0.997015, -7.98532e-06, -0.0771535, 1.28895e-06, 1, -8.72016e-05, 0.0771535, 8.68951e-05, 0.997014, -0.38739, 1.29335, -0.459785)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NPC_WALL2/Obstacle5"]
+transform = Transform3D(0.906431, 0, -0.895532, 0, 5.64517, 0, 0.087998, 0, 9.22449, -0.0264206, 0.432385, 1.66893e-05)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="NPC_WALL2/Obstacle5"]
+transform = Transform3D(1.02431, 0, -0.999302, 0, 1, 0, 0.108074, 0, 9.47117, 0.0133667, -2.8454, 0.00937366)
+mesh = SubResource("BoxMesh_ixc3a")
+
+[node name="Obstacle6" type="StaticBody3D" parent="NPC_WALL2"]
+transform = Transform3D(0.994351, 0, 0.106143, 0, 1, 0, -0.106143, 0, 0.994351, 5.26618, 3.4041, -38.0201)
+script = ExtResource("2_ot33o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_WALL2/Obstacle6"]
+transform = Transform3D(0.993296, 0, -0.115596, 0, 1, 0, 0.115596, 0, 0.993296, 0.011425, 0.481375, -0.197061)
+shape = SubResource("BoxShape3D_j56uq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="NPC_WALL2/Obstacle6"]
+libraries = {
+"": SubResource("AnimationLibrary_7drkc")
+}
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="NPC_WALL2/Obstacle6"]
+transform = Transform3D(0.997015, -7.98532e-06, -0.0771535, 1.28895e-06, 1, -8.72016e-05, 0.0771535, 8.68951e-05, 0.997014, -0.38739, 1.29335, -0.459785)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NPC_WALL2/Obstacle6"]
+transform = Transform3D(0.906431, 0, -0.895532, 0, 5.64517, 0, 0.087998, 0, 9.22449, -0.0264204, 0.432385, 1.52588e-05)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="NPC_WALL2/Obstacle6"]
+transform = Transform3D(1.02431, 0, -0.999302, 0, 1, 0, 0.108074, 0, 9.47117, 0.0133667, -2.8454, 0.00937366)
+mesh = SubResource("BoxMesh_ixc3a")
+
+[node name="Obstacle7" type="StaticBody3D" parent="NPC_WALL2"]
+transform = Transform3D(0.994351, 0, 0.106143, 0, 1, 0, -0.106143, 0, 0.994351, 5.26618, 3.4041, -38.0201)
+script = ExtResource("2_ot33o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_WALL2/Obstacle7"]
+transform = Transform3D(0.993296, 0, -0.115596, 0, 1, 0, 0.115596, 0, 0.993296, 0.011425, 0.481375, -0.197061)
+shape = SubResource("BoxShape3D_j56uq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="NPC_WALL2/Obstacle7"]
+libraries = {
+"": SubResource("AnimationLibrary_7drkc")
+}
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="NPC_WALL2/Obstacle7"]
+transform = Transform3D(0.997015, -7.98532e-06, -0.0771535, 1.28895e-06, 1, -8.72016e-05, 0.0771535, 8.68951e-05, 0.997014, -0.38739, 1.29335, -0.459785)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NPC_WALL2/Obstacle7"]
+transform = Transform3D(0.906431, 0, -0.895532, 0, 5.64517, 0, 0.087998, 0, 9.22449, -0.0264204, 0.432385, 1.52588e-05)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="NPC_WALL2/Obstacle7"]
+transform = Transform3D(1.02431, 0, -0.999302, 0, 1, 0, 0.108074, 0, 9.47117, 0.0133667, -2.8454, 0.00937366)
+mesh = SubResource("BoxMesh_ixc3a")
+
+[node name="Area3D" type="Area3D" parent="NPC_WALL2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -38.1497)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_WALL2/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.490645, 0.719292)
+shape = SubResource("BoxShape3D_bb2e8")
+
+[node name="Path3D" type="Path3D" parent="NPC_WALL2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -36.9042)
+curve = SubResource("Curve3D_xtef2")
+
+[node name="PathFollow3D" type="PathFollow3D" parent="NPC_WALL2/Path3D"]
+transform = Transform3D(0.968537, -0.00871422, -0.248715, 9.31323e-10, 0.999387, -0.0350154, 0.248868, 0.0339138, 0.967944, -1.38785, 1.07676, -0.415657)
+
+[node name="Node3D" type="Node3D" parent="."]
+
+[node name="Obstacle6" type="StaticBody3D" parent="Node3D"]
+transform = Transform3D(0.566133, 0, 0.824314, 0, 1, 0, -0.824314, 0, 0.566133, 8.54665, 3.25234, -8.68363)
+script = ExtResource("2_ot33o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/Obstacle6"]
+transform = Transform3D(0.993296, 0, -0.115596, 0, 1, 0, 0.115596, 0, 0.993296, 0.011425, 0.481375, -0.197061)
+shape = SubResource("BoxShape3D_j56uq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Node3D/Obstacle6"]
+libraries = {
+"": SubResource("AnimationLibrary_7drkc")
+}
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="Node3D/Obstacle6"]
+transform = Transform3D(0.997015, -7.98532e-06, -0.0771535, 1.28895e-06, 1, -8.72016e-05, 0.0771535, 8.68951e-05, 0.997014, -0.38739, 1.29335, -0.459785)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D/Obstacle6"]
+transform = Transform3D(0.906431, 0, -0.895532, 0, 5.64517, 0, 0.087998, 0, 9.22449, -0.0264206, 0.432385, 1.66893e-05)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Node3D/Obstacle6"]
+transform = Transform3D(1.02431, 0, -0.999302, 0, 1, 0, 0.108074, 0, 9.47117, 0.0133667, -2.8454, 0.00937366)
+mesh = SubResource("BoxMesh_ixc3a")
+
+[node name="Obstacle7" type="StaticBody3D" parent="Node3D"]
+transform = Transform3D(-0.0333298, 0, 0.999444, 0, 1, 0, -0.999444, 0, -0.0333298, 0.144923, 3.25234, -12.0548)
+script = ExtResource("2_ot33o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/Obstacle7"]
+transform = Transform3D(0.993296, 0, -0.115596, 0, 1, 0, 0.115596, 0, 0.993296, 0.011425, 0.481375, -0.197061)
+shape = SubResource("BoxShape3D_j56uq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Node3D/Obstacle7"]
+libraries = {
+"": SubResource("AnimationLibrary_7drkc")
+}
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="Node3D/Obstacle7"]
+transform = Transform3D(0.997015, -7.98532e-06, -0.0771535, 1.28895e-06, 1, -8.72016e-05, 0.0771535, 8.68951e-05, 0.997014, -0.38739, 1.29335, -0.459785)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D/Obstacle7"]
+transform = Transform3D(0.906431, 0, -0.895532, 0, 5.64517, 0, 0.087998, 0, 9.22449, -0.0264206, 0.432385, 1.66893e-05)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Node3D/Obstacle7"]
+transform = Transform3D(1.02431, 0, -0.999302, 0, 1, 0, 0.108074, 0, 9.47117, 0.0133667, -2.8454, 0.00937366)
+mesh = SubResource("BoxMesh_ixc3a")
+
+[node name="Obstacle8" type="StaticBody3D" parent="Node3D"]
+transform = Transform3D(-0.783575, 0, 0.621298, 0, 1, 0, -0.621298, 0, -0.783575, -7.96422, 3.25234, -8.97921)
+script = ExtResource("2_ot33o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/Obstacle8"]
+transform = Transform3D(0.993296, 0, -0.115596, 0, 1, 0, 0.115596, 0, 0.993296, 0.011425, 0.481375, -0.197061)
+shape = SubResource("BoxShape3D_j56uq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Node3D/Obstacle8"]
+libraries = {
+"": SubResource("AnimationLibrary_7drkc")
+}
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="Node3D/Obstacle8"]
+transform = Transform3D(0.997015, -7.98532e-06, -0.0771535, 1.28895e-06, 1, -8.72016e-05, 0.0771535, 8.68951e-05, 0.997014, -0.38739, 1.29335, -0.459785)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D/Obstacle8"]
+transform = Transform3D(0.906431, 0, -0.895532, 0, 5.64517, 0, 0.087998, 0, 9.22449, -0.0264206, 0.432385, 1.66893e-05)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Node3D/Obstacle8"]
+transform = Transform3D(1.02431, 0, -0.999302, 0, 1, 0, 0.108074, 0, 9.47117, 0.0133667, -2.8454, 0.00937366)
+mesh = SubResource("BoxMesh_ixc3a")
+
+[node name="Node3D2" type="Node3D" parent="."]
+transform = Transform3D(-0.999418, 0, -0.0341146, 0, 1, 0, 0.0341146, 0, -0.999418, 0, 0, -0.678589)
+
+[node name="Obstacle6" type="StaticBody3D" parent="Node3D2"]
+transform = Transform3D(0.566133, 0, 0.824314, 0, 1, 0, -0.824314, 0, 0.566133, 8.54665, 3.25234, -8.68363)
+script = ExtResource("2_ot33o")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Node3D2/Obstacle6"]
+libraries = {
+"": SubResource("AnimationLibrary_7drkc")
+}
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="Node3D2/Obstacle6"]
+transform = Transform3D(0.997015, -7.98532e-06, -0.0771535, 1.28895e-06, 1, -8.72016e-05, 0.0771535, 8.68951e-05, 0.997014, -0.38739, 1.29335, -0.459785)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D2/Obstacle6"]
+transform = Transform3D(0.906431, 0, -0.895532, 0, 5.64517, 0, 0.087998, 0, 9.22449, -0.0264206, 0.432385, 1.71661e-05)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Node3D2/Obstacle6"]
+transform = Transform3D(1.02431, 0, -0.999302, 0, 1, 0, 0.108074, 0, 9.47117, 0.0133667, -2.8454, 0.00937366)
+mesh = SubResource("BoxMesh_ixc3a")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D2/Obstacle6"]
+transform = Transform3D(0.993296, 0, -0.115596, 0, 1, 0, 0.115596, 0, 0.993296, 0.011425, 0.481375, -0.197061)
+shape = SubResource("BoxShape3D_j56uq")
+
+[node name="Obstacle7" type="StaticBody3D" parent="Node3D2"]
+transform = Transform3D(-0.0333298, 0, 0.999444, 0, 1, 0, -0.999444, 0, -0.0333298, 0.144923, 3.25234, -12.0548)
+script = ExtResource("2_ot33o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D2/Obstacle7"]
+transform = Transform3D(0.993296, 0, -0.115596, 0, 1, 0, 0.115596, 0, 0.993296, 0.011425, 0.481375, -0.197061)
+shape = SubResource("BoxShape3D_j56uq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Node3D2/Obstacle7"]
+libraries = {
+"": SubResource("AnimationLibrary_7drkc")
+}
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="Node3D2/Obstacle7"]
+transform = Transform3D(0.997015, -7.98532e-06, -0.0771535, 1.28895e-06, 1, -8.72016e-05, 0.0771535, 8.68951e-05, 0.997014, -0.38739, 1.29335, -0.459785)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D2/Obstacle7"]
+transform = Transform3D(0.906431, 0, -0.895532, 0, 5.64517, 0, 0.087998, 0, 9.22449, -0.0264206, 0.432385, 1.66893e-05)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Node3D2/Obstacle7"]
+transform = Transform3D(1.02431, 0, -0.999302, 0, 1, 0, 0.108074, 0, 9.47117, 0.0133667, -2.8454, 0.00937366)
+mesh = SubResource("BoxMesh_ixc3a")
+
+[node name="Obstacle8" type="StaticBody3D" parent="Node3D2"]
+transform = Transform3D(-0.783575, 0, 0.621298, 0, 1, 0, -0.621298, 0, -0.783575, -7.96422, 3.25234, -8.97921)
+script = ExtResource("2_ot33o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D2/Obstacle8"]
+transform = Transform3D(0.993296, 0, -0.115596, 0, 1, 0, 0.115596, 0, 0.993296, 0.011425, 0.481375, -0.197061)
+shape = SubResource("BoxShape3D_j56uq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Node3D2/Obstacle8"]
+libraries = {
+"": SubResource("AnimationLibrary_7drkc")
+}
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="Node3D2/Obstacle8"]
+transform = Transform3D(0.997015, -7.98532e-06, -0.0771535, 1.28895e-06, 1, -8.72016e-05, 0.0771535, 8.68951e-05, 0.997014, -0.38739, 1.29335, -0.459785)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D2/Obstacle8"]
+transform = Transform3D(0.906431, 0, -0.895532, 0, 5.64517, 0, 0.087998, 0, 9.22449, -0.0264206, 0.432385, 1.66893e-05)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Node3D2/Obstacle8"]
+transform = Transform3D(1.02431, 0, -0.999302, 0, 1, 0, 0.108074, 0, 9.47117, 0.0133667, -2.8454, 0.00937366)
+mesh = SubResource("BoxMesh_ixc3a")

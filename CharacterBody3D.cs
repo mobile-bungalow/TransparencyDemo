@@ -1,21 +1,25 @@
 using Godot;
 using System;
+using System.Linq;
 public partial class CharacterBody3D : Godot.CharacterBody3D
 {
-	public const float SPEED = 10.0f;
-	public const float DRAG_SENSITIVITY = 0.01f;
+	public const float SPEED = 20.0f;
+	public const float DRAG_SENSITIVITY = 0.005f;
 	public const float MOUSE_BIAS = 2.2f;
 	public const float CAMERA_DISTANCE = 17.0f;
-	const float NINETY_DEGREES = MathF.PI / 2.0f;
+	public const float SIGHT_RADIUS = 4.0f;
+	public const float NINETY_DEGREES = MathF.PI / 2.0f;
 
 	public Vector3 CamXOrtho = Vector3.Zero;
 	public Vector3 CamYOrtho = Vector3.Zero;
 	public Vector2 DragDir = Vector2.Zero;
-	public ShapeCast3D Sight;
+
 	public Camera3D CameraWorld;
 
 	public override void _Ready()
 	{
+		// For demo purposes
+		GetTree().DebugCollisionsHint = true;
 		CameraWorld = GetNode<Camera3D>("%Camera3D");
 		UpdatePlayerMoveVectors();
 	}
@@ -23,6 +27,7 @@ public partial class CharacterBody3D : Godot.CharacterBody3D
 	public override void _Process(double delta)
 	{
 		AdjustCameraToMousePosition();
+		AdjustCameraViewTube();
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -41,6 +46,38 @@ public partial class CharacterBody3D : Godot.CharacterBody3D
 		Vector3 floor_proj = cam_direction - (cam_direction.Dot(Vector3.Up) * Vector3.Up);
 		CamYOrtho = floor_proj.Normalized();
 		CamXOrtho = floor_proj.Rotated(Vector3.Up, NINETY_DEGREES).Normalized();
+	}
+
+	private void AdjustCameraViewTube()
+	{
+		Vector3[] variations = new Vector3[] { Vector3.Zero, CamXOrtho, -CamXOrtho, -CamYOrtho };
+
+		var space = GetWorld3D().DirectSpaceState;
+		var rid = GetRid();
+		foreach (var offset in variations)
+		{
+			var rq = new PhysicsRayQueryParameters3D
+			{
+				From = CameraWorld.GlobalPosition,
+				To = GlobalPosition + offset,
+				CollideWithAreas = true,
+			};
+
+			while (true)
+			{
+				var res = space.IntersectRay(rq);
+				if (res.Keys.Count == 0) break;
+				var rid_hit = res["rid"].As<Rid>();
+				if (rid_hit == rid) break;
+				rq.Exclude.Add(rid_hit);
+				if (res["collider"].AsGodotObject() is Obstacle o)
+				{
+					o.Dissolve();
+				}
+			}
+		}
+
+
 	}
 
 	private void AdjustCameraToMousePosition()
@@ -69,6 +106,7 @@ public partial class CharacterBody3D : Godot.CharacterBody3D
 		var from_origin = new_cam_pos - player_pos;
 		from_origin = from_origin.Rotated(Vector3.Up, Vector2.Up.Cross(DragDir) * DRAG_SENSITIVITY);
 		new_cam_pos = from_origin + player_pos;
+		DragDir = Vector2.Zero;
 
 		CameraWorld.LookAtFromPosition(new_cam_pos, player_pos, Vector3.Up);
 	}
@@ -77,20 +115,16 @@ public partial class CharacterBody3D : Godot.CharacterBody3D
 	private Vector2 previous = Vector2.Up;
 	public override void _Input(InputEvent @event)
 	{
-		if (@event is InputEventMouseButton m)
-		{
-			if (@event.IsActionPressed("click"))
-			{
-				previous = m.Position;
-				MouseDown = true;
-			}
-		}
+		bool newState = MouseDown;
 
-		// you are going to have to add this you your
-		// input map if you reuse this controller.
-		if (@event.IsActionReleased("click"))
+		if (@event.IsActionPressed("click")) newState = true;
+		if (@event.IsActionReleased("click")) newState = false;
+
+		if (newState != MouseDown)
 		{
-			MouseDown = false;
+			DragDir = Vector2.Zero;
+			previous = GetViewport().GetMousePosition();
+			UpdatePlayerMoveVectors();
 		}
 
 		if (MouseDown && @event is InputEventMouseMotion ev)
@@ -100,13 +134,9 @@ public partial class CharacterBody3D : Godot.CharacterBody3D
 			UpdatePlayerMoveVectors();
 		}
 
-		if (!MouseDown)
-		{
-			DragDir = Vector2.Zero;
-		}
+		MouseDown = newState;
 
 		base._Input(@event);
 	}
-
 
 }

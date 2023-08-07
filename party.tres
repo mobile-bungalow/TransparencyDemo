@@ -1,0 +1,22 @@
+[gd_resource type="QuadMesh" load_steps=2 format=3 uid="uid://4nsoecmw3gqn"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t5f03"]
+cull_mode = 2
+no_depth_test = true
+shading_mode = 0
+vertex_color_use_as_albedo = true
+disable_receive_shadows = true
+shadow_to_opacity = true
+billboard_keep_scale = true
+grow_amount = 3.373
+point_size = 57.0
+proximity_fade_distance = 0.0
+distance_fade_mode = 2
+distance_fade_max_distance = 11.44
+
+[resource]
+material = SubResource("StandardMaterial3D_t5f03")
+size = Vector2(0.03, 0.3)
+subdivide_width = 4
+subdivide_depth = 2
+orientation = 0
