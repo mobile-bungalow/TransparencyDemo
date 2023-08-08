@@ -1,6 +1,5 @@
 using Godot;
 using System;
-using System.Linq;
 public partial class CharacterBody3D : Godot.CharacterBody3D
 {
 	public const float SPEED = 20.0f;
