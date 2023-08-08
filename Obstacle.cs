@@ -34,6 +34,7 @@ public partial class Obstacle : StaticBody3D
 				// repeatedly start the reassemble animation, which is empty for two seconds; 
 				// you **should** do this with a timer node
 				player.Stop();
+				FadeState = 0.0f;
 				player.ClearQueue();
 				player.Queue("reassemble");
 				break;

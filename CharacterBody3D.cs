@@ -50,7 +50,9 @@ public partial class CharacterBody3D : Godot.CharacterBody3D
 
 	private void AdjustCameraViewTube()
 	{
-		Vector3[] variations = new Vector3[] { Vector3.Zero, CamXOrtho, -CamXOrtho, -CamYOrtho };
+		Vector3[] variations = new Vector3[] { Vector3.Zero,
+											   CamXOrtho,
+											   -CamXOrtho };
 
 		var space = GetWorld3D().DirectSpaceState;
 		var rid = GetRid();
@@ -59,24 +61,28 @@ public partial class CharacterBody3D : Godot.CharacterBody3D
 			var rq = new PhysicsRayQueryParameters3D
 			{
 				From = CameraWorld.GlobalPosition,
-				To = GlobalPosition + offset,
+				To = GlobalPosition + offset.Normalized() * SIGHT_RADIUS,
 				CollideWithAreas = true,
+				CollisionMask = 0b010,
 			};
-
 			while (true)
 			{
 				var res = space.IntersectRay(rq);
 				if (res.Keys.Count == 0) break;
 				var rid_hit = res["rid"].As<Rid>();
 				if (rid_hit == rid) break;
-				rq.Exclude.Add(rid_hit);
+				var e = rq.Exclude;
+				e.Add(rid_hit);
+				rq.Exclude = e;
 				if (res["collider"].AsGodotObject() is Obstacle o)
 				{
-					o.Dissolve();
+					var normal = res["normal"].AsVector3();
+					var pc = res["position"].AsVector3() - CameraWorld.GlobalPosition;
+					var uc = res["position"].AsVector3() - GlobalPosition;
+					if (Mathf.Sign(pc.Dot(normal)) != Mathf.Sign(uc.Dot(normal))) o.Dissolve();
 				}
 			}
 		}
-
 
 	}
 
