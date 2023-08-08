@@ -1,11 +1,11 @@
 [gd_scene load_steps=43 format=3 uid="uid://druxfjfb3ac40"]
 
-[ext_resource type="Script" path="res://CharacterBody3D.cs" id="1_hksad"]
-[ext_resource type="Script" path="res://NPC.cs" id="2_do122"]
-[ext_resource type="Script" path="res://Obstacle.cs" id="2_ot33o"]
+[ext_resource type="Script" path="res://Player.gd" id="1_u2hmh"]
+[ext_resource type="Script" path="res://NPC.gd" id="2_ck6fp"]
+[ext_resource type="Script" path="res://Obstacle.gd" id="2_fm77o"]
 [ext_resource type="Shader" path="res://dissolve.gdshader" id="3_vbef0"]
 [ext_resource type="QuadMesh" uid="uid://4nsoecmw3gqn" path="res://party.tres" id="4_jda1m"]
-[ext_resource type="Script" path="res://BoxDemo.cs" id="6_5okhr"]
+[ext_resource type="Script" path="res://BoxDemo.gd" id="6_fp05s"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tr11c"]
 sky_top_color = Color(0.243137, 0.388235, 0.909804, 1)
@@ -125,7 +125,7 @@ shader = ExtResource("3_vbef0")
 shader_parameter/albedo = Color(1, 1, 1, 1)
 shader_parameter/point_size = 1.0
 shader_parameter/roughness = 1.0
-shader_parameter/metallic_texture_channel = Plane(1, 0, 0, 0)
+shader_parameter/metallic_texture_channel = null
 shader_parameter/specular = 0.5
 shader_parameter/metallic = 0.0
 shader_parameter/uv1_scale = Vector3(1, 1, 1)
@@ -248,7 +248,7 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.535104, 0.844786, 0, -0.844786, 0.535104, 0, 10.0144, 4.6616)
 
 [node name="Player" type="CharacterBody3D" parent="."]
-script = ExtResource("1_hksad")
+script = ExtResource("1_u2hmh")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.23728, 0)
@@ -275,11 +275,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -37.16)
 curve = SubResource("Curve3D_6ohaf")
 
 [node name="PathFollow3D" type="PathFollow3D" parent="NPC_1/Path3D"]
-transform = Transform3D(0.0285285, 0, -0.999593, 0, 1, 0, 0.999593, 0, 0.0285285, 0.039, 1, 0.013)
+transform = Transform3D(-0.0285283, 0, 0.999593, 0, 1, 0, -0.999593, 0, -0.0285283, 0.039, 1, 0.013)
 
 [node name="NPC" type="CharacterBody3D" parent="NPC_1/Path3D/PathFollow3D"]
-transform = Transform3D(0.0285285, 0, 0.999593, 0, 1, 0, -0.999593, 0, 0.0285285, -0.535477, -1, 0.0237334)
-script = ExtResource("2_do122")
+transform = Transform3D(0.0285285, 0, 0.999593, 0, 1, 0, -0.999593, 0, 0.0285285, -0.535473, -1, 0.0237334)
+script = ExtResource("2_ck6fp")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_1/Path3D/PathFollow3D/NPC"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.23728, 0)
@@ -300,8 +300,7 @@ transform = Transform3D(-0.0275203, 0, 0.999621, 0, 1, 0, -0.999621, 0, -0.02752
 [node name="Fader" type="StaticBody3D" parent="HexHalf3/Obstacle"]
 collision_layer = 2
 collision_mask = 2
-script = ExtResource("2_ot33o")
-FadeState = 0.0
+script = ExtResource("2_fm77o")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="HexHalf3/Obstacle/Fader"]
 transform = Transform3D(0.999996, 0, 0, 0, 1, 0, 0, 0, 0.999995, 0, 0, 0)
@@ -346,8 +345,7 @@ transform = Transform3D(-0.807743, 0, 0.589535, 0, 1, 0, -0.589535, 0, -0.807743
 [node name="Fader" type="StaticBody3D" parent="HexHalf3/Obstacle3"]
 collision_layer = 2
 collision_mask = 2
-script = ExtResource("2_ot33o")
-FadeState = 0.0
+script = ExtResource("2_fm77o")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="HexHalf3/Obstacle3/Fader"]
 transform = Transform3D(0.999996, 0, 0, 0, 1, 0, 0, 0, 0.999995, 0, 0, 0)
@@ -392,8 +390,7 @@ transform = Transform3D(0.739925, 0, 0.67269, 0, 1, 0, -0.67269, 0, 0.739925, -7
 [node name="Fader" type="StaticBody3D" parent="HexHalf3/Obstacle2"]
 collision_layer = 2
 collision_mask = 2
-script = ExtResource("2_ot33o")
-FadeState = 0.0
+script = ExtResource("2_fm77o")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="HexHalf3/Obstacle2/Fader"]
 transform = Transform3D(0.999996, 0, 0, 0, 1, 0, 0, 0, 0.999995, 0, 0, 0)
@@ -441,8 +438,7 @@ transform = Transform3D(-0.0275203, 0, 0.999621, 0, 1, 0, -0.999621, 0, -0.02752
 [node name="Fader" type="StaticBody3D" parent="HexHalf2/Obstacle"]
 collision_layer = 2
 collision_mask = 2
-script = ExtResource("2_ot33o")
-FadeState = 0.0
+script = ExtResource("2_fm77o")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="HexHalf2/Obstacle/Fader"]
 transform = Transform3D(0.999996, 0, 0, 0, 1, 0, 0, 0, 0.999995, 0, 0, 0)
@@ -487,8 +483,7 @@ transform = Transform3D(-0.807743, 0, 0.589535, 0, 1, 0, -0.589535, 0, -0.807743
 [node name="Fader" type="StaticBody3D" parent="HexHalf2/Obstacle3"]
 collision_layer = 2
 collision_mask = 2
-script = ExtResource("2_ot33o")
-FadeState = 0.0
+script = ExtResource("2_fm77o")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="HexHalf2/Obstacle3/Fader"]
 transform = Transform3D(0.999996, 0, 0, 0, 1, 0, 0, 0, 0.999995, 0, 0, 0)
@@ -533,8 +528,7 @@ transform = Transform3D(0.739925, 0, 0.67269, 0, 1, 0, -0.67269, 0, 0.739925, -7
 [node name="Fader" type="StaticBody3D" parent="HexHalf2/Obstacle2"]
 collision_layer = 2
 collision_mask = 2
-script = ExtResource("2_ot33o")
-FadeState = 0.0
+script = ExtResource("2_fm77o")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="HexHalf2/Obstacle2/Fader"]
 transform = Transform3D(0.999996, 0, 0, 0, 1, 0, 0, 0, 0.999995, 0, 0, 0)
@@ -574,7 +568,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 10.0108, 0, -3.03827, 0)
 mesh = SubResource("BoxMesh_pk5xe")
 
 [node name="BoxDemo" type="Node3D" parent="."]
-script = ExtResource("6_5okhr")
+script = ExtResource("6_fp05s")
 
 [node name="Obstacle" type="Node3D" parent="BoxDemo"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.27978, 3.53822, 35.1774)
@@ -582,8 +576,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.27978, 3.53822, 35.1774)
 [node name="Fader" type="StaticBody3D" parent="BoxDemo/Obstacle"]
 collision_layer = 2
 collision_mask = 2
-script = ExtResource("2_ot33o")
-FadeState = 0.0
+script = ExtResource("2_fm77o")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="BoxDemo/Obstacle/Fader"]
 transform = Transform3D(0.999996, 0, 0, 0, 1, 0, 0, 0, 0.999995, 0, 0, 0)
@@ -628,8 +621,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28192, 3.53822, 35.1774)
 [node name="Fader" type="StaticBody3D" parent="BoxDemo/Obstacle2"]
 collision_layer = 2
 collision_mask = 2
-script = ExtResource("2_ot33o")
-FadeState = 0.0
+script = ExtResource("2_fm77o")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="BoxDemo/Obstacle2/Fader"]
 transform = Transform3D(0.999996, 0, 0, 0, 1, 0, 0, 0, 0.999995, 0, 0, 0)
@@ -674,8 +666,7 @@ transform = Transform3D(-0.0105416, 0, 0.999944, 0, 1, 0, -0.999944, 0, -0.01054
 [node name="Fader" type="StaticBody3D" parent="BoxDemo/Obstacle3"]
 collision_layer = 2
 collision_mask = 2
-script = ExtResource("2_ot33o")
-FadeState = 0.0
+script = ExtResource("2_fm77o")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="BoxDemo/Obstacle3/Fader"]
 transform = Transform3D(0.999996, 0, 0, 0, 1, 0, 0, 0, 0.999995, 0, 0, 0)
@@ -720,8 +711,7 @@ transform = Transform3D(-0.0105416, 0, 0.999944, 0, 1, 0, -0.999944, 0, -0.01054
 [node name="Fader" type="StaticBody3D" parent="BoxDemo/Obstacle4"]
 collision_layer = 2
 collision_mask = 2
-script = ExtResource("2_ot33o")
-FadeState = 0.0
+script = ExtResource("2_fm77o")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="BoxDemo/Obstacle4/Fader"]
 transform = Transform3D(0.999996, 0, 0, 0, 1, 0, 0, 0, 0.999995, 0, 0, 0)
@@ -773,11 +763,11 @@ transform = Transform3D(0.999933, 0, 0.0115713, 0, 1, 0, -0.0115713, 0, 0.999933
 curve = SubResource("Curve3D_dl0hw")
 
 [node name="PathFollow3D" type="PathFollow3D" parent="BoxDemo/Path3D"]
-transform = Transform3D(0.999646, 0, -0.0266046, 0, 1, 0, 0.0266046, 0, 0.999646, -2.38302, -1.90735e-06, -0.375237)
+transform = Transform3D(-0.999171, 7.24928e-08, -0.0407005, 0, 1, 1.78113e-06, 0.0407005, 1.77965e-06, -0.999171, -2.74405, 5.72205e-06, 2.35947)
 
 [node name="NPC" type="CharacterBody3D" parent="BoxDemo/Path3D/PathFollow3D"]
 transform = Transform3D(0.0285285, 0, 0.999593, 0, 1, 9.31323e-10, -0.999593, 7.45058e-09, 0.0285285, 0, 0, 0)
-script = ExtResource("2_do122")
+script = ExtResource("2_ck6fp")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BoxDemo/Path3D/PathFollow3D/NPC"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.23728, 0)
@@ -806,8 +796,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00562668, 0, -10.0894)
 [node name="Fader" type="StaticBody3D" parent="Wall2/Obstacle"]
 collision_layer = 2
 collision_mask = 2
-script = ExtResource("2_ot33o")
-FadeState = 0.0
+script = ExtResource("2_fm77o")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="Wall2/Obstacle/Fader"]
 transform = Transform3D(0.999996, 0, 0, 0, 1, 0, 0, 0, 0.999995, 0, 0, 0)
@@ -846,59 +835,13 @@ shape = SubResource("BoxShape3D_cjxso")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 10.0108, 0, -3.03827, 0)
 mesh = SubResource("BoxMesh_pk5xe")
 
-[node name="Obstacle3" type="Node3D" parent="Wall2"]
-
-[node name="Fader" type="StaticBody3D" parent="Wall2/Obstacle3"]
-collision_layer = 2
-collision_mask = 2
-script = ExtResource("2_ot33o")
-FadeState = 0.0
-
-[node name="GPUParticles3D" type="GPUParticles3D" parent="Wall2/Obstacle3/Fader"]
-transform = Transform3D(0.999996, 0, 0, 0, 1, 0, 0, 0, 0.999995, 0, 0, 0)
-emitting = false
-amount = 200
-lifetime = 1.03
-one_shot = true
-speed_scale = 0.75
-explosiveness = 0.17
-randomness = 0.32
-visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
-process_material = SubResource("ParticleProcessMaterial_fhbj4")
-draw_pass_1 = ExtResource("4_jda1m")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Wall2/Obstacle3/Fader"]
-transform = Transform3D(0.983, 0, 0, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
-instance_shader_parameters/fade = 1.0
-mesh = SubResource("BoxMesh_hhix4")
-skeleton = NodePath("../..")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Wall2/Obstacle3/Fader"]
-transform = Transform3D(0.933731, 0, 0, 0, 0.933731, 0, 0, 0, 0.933731, 0, 0, 0)
-shape = SubResource("BoxShape3D_o20od")
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Wall2/Obstacle3/Fader"]
-libraries = {
-"": SubResource("AnimationLibrary_u04h0")
-}
-
-[node name="StaticBody3D" type="StaticBody3D" parent="Wall2/Obstacle3"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Wall2/Obstacle3/StaticBody3D"]
-shape = SubResource("BoxShape3D_cjxso")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="Wall2/Obstacle3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 10.0108, 0, -3.03827, 0)
-mesh = SubResource("BoxMesh_pk5xe")
-
 [node name="Obstacle2" type="Node3D" parent="Wall2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0196495, 0, -20.1943)
 
 [node name="Fader" type="StaticBody3D" parent="Wall2/Obstacle2"]
 collision_layer = 2
 collision_mask = 2
-script = ExtResource("2_ot33o")
-FadeState = 0.0
+script = ExtResource("2_fm77o")
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="Wall2/Obstacle2/Fader"]
 transform = Transform3D(0.999996, 0, 0, 0, 1, 0, 0, 0, 0.999995, 0, 0, 0)
@@ -934,5 +877,49 @@ libraries = {
 shape = SubResource("BoxShape3D_cjxso")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Wall2/Obstacle2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 10.0108, 0, -3.03827, 0)
+mesh = SubResource("BoxMesh_pk5xe")
+
+[node name="Obstacle3" type="Node3D" parent="Wall2"]
+
+[node name="Fader" type="StaticBody3D" parent="Wall2/Obstacle3"]
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("2_fm77o")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="Wall2/Obstacle3/Fader"]
+transform = Transform3D(0.999996, 0, 0, 0, 1, 0, 0, 0, 0.999995, 0, 0, 0)
+emitting = false
+amount = 200
+lifetime = 1.03
+one_shot = true
+speed_scale = 0.75
+explosiveness = 0.17
+randomness = 0.32
+visibility_aabb = AABB(-1.34477, -1.54344, -1.549, 2.83309, 2.89743, 3.14096)
+process_material = SubResource("ParticleProcessMaterial_fhbj4")
+draw_pass_1 = ExtResource("4_jda1m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Wall2/Obstacle3/Fader"]
+transform = Transform3D(0.983, 0, 0, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
+instance_shader_parameters/fade = 1.0
+mesh = SubResource("BoxMesh_hhix4")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wall2/Obstacle3/Fader"]
+transform = Transform3D(0.933731, 0, 0, 0, 0.933731, 0, 0, 0, 0.933731, 0, 0, 0)
+shape = SubResource("BoxShape3D_o20od")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Wall2/Obstacle3/Fader"]
+libraries = {
+"": SubResource("AnimationLibrary_u04h0")
+}
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Wall2/Obstacle3"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wall2/Obstacle3/StaticBody3D"]
+shape = SubResource("BoxShape3D_cjxso")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Wall2/Obstacle3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 10.0108, 0, -3.03827, 0)
 mesh = SubResource("BoxMesh_pk5xe")

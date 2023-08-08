@@ -5,14 +5,10 @@ public partial class NPC : Godot.CharacterBody3D
 {
 	public const float Speed = 5.0f;
 
-	PathFollow3D pf;
-
-
+	private PathFollow3D pf;
 	public Camera3D CameraWorld;
 	public bool InsideHidden = false;
 	public VisibleOnScreenNotifier3D Noti;
-	public const float SIGHT_RADIUS = 4.0f;
-	public const float NINETY_DEGREES = MathF.PI / 2.0f;
 
 	public override void _Ready()
 	{
@@ -24,16 +20,15 @@ public partial class NPC : Godot.CharacterBody3D
 
 	public override void _Process(double delta)
 	{
-		AdjustCameraViewTube();
+		RayCast();
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
-
 		pf.Progress += 0.1f;
 	}
 
-	private void AdjustCameraViewTube()
+	private void RayCast()
 	{
 		if (!Noti.IsOnScreen() || InsideHidden)
 		{
