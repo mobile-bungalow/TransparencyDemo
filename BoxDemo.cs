@@ -1,7 +1,7 @@
 using Godot;
-using System;
 
-// This demo shows how 
+// This demo shows how to add a room which hides bodies inside it
+// unless the player is inside.
 public partial class BoxDemo : Node3D
 {
 	public Area3D Area;
