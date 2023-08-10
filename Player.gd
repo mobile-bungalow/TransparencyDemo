@@ -21,7 +21,6 @@ func _ready():
 
 func _process(_delta):
 	adjust_camera_to_mouse_position()
-	adjust_camera_view_tube()
 
 func _physics_process(_delta):
 	var dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
@@ -52,30 +51,6 @@ func update_player_move_vectors():
 		var floor_proj = cam_direction - (cam_direction.dot(Vector3.UP) * Vector3.UP);
 		cam_y_ortho = floor_proj.normalized();
 		cam_x_ortho = floor_proj.rotated(Vector3.UP, NINETY_DEGREES).normalized();
-
-func adjust_camera_view_tube():
-	var variations = [ Vector3.ZERO, cam_x_ortho, cam_y_ortho ]
-	var space = get_world_3d().direct_space_state
-	var rid = get_rid()
-
-	for offset in variations:
-		var rq = PhysicsRayQueryParameters3D.new();
-		rq.from = camera_world.global_position
-		rq.to = global_position + offset * SIGHT_RADIUS; 
-		rq.collide_with_areas = true;
-		collision_mask = 2;
-		while(true):
-			var res = space.intersect_ray(rq)
-			if (res.keys().size() == 0): break;
-			if (res.rid == rid): break;
-			var e = rq.exclude;
-			e.push_front(res.rid);
-			rq.exclude = e;
-			if (res.collider is Obstacle):
-				var normal = res.normal;
-				var pc = res.position - camera_world.global_position;
-				var uc = res.position - global_position;
-				if (sign(pc.dot(normal)) != sign(uc.dot(normal))): res.collider.dissolve();
 
 func adjust_camera_to_mouse_position():
 	var player_pos = global_position

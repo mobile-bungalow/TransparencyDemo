@@ -14,6 +14,7 @@ func body_exited(b):
 			item.hide()
 			item.is_inside_hidden = true;
 	if (b is NPC):
+		b.is_inside_hidden = false;
 		inside.remove_at(inside.find(b))
 		if (!player_in_room):
 			b.show()
@@ -27,6 +28,7 @@ func body_entered(b):
 			item.show()
 			item.is_inside_hidden = false;
 	if (b is NPC):
+		b.is_inside_hidden = true;
 		inside.push_back(b)
 		if (!player_in_room):
 			b.hide()

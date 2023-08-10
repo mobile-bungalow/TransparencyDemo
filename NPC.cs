@@ -20,7 +20,6 @@ public partial class NPC : Godot.CharacterBody3D
 
 	public override void _Process(double delta)
 	{
-		RayCast();
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -28,38 +27,6 @@ public partial class NPC : Godot.CharacterBody3D
 		pf.Progress += 0.1f;
 	}
 
-	private void RayCast()
-	{
-		if (!Noti.IsOnScreen() || InsideHidden)
-		{
-			return;
-		}
-		var space = GetWorld3D().DirectSpaceState;
-		var rid = GetRid();
-
-		var rq = new PhysicsRayQueryParameters3D
-		{
-			From = CameraWorld.GlobalPosition,
-			To = GlobalPosition,
-			CollideWithAreas = true,
-			CollisionMask = 0b010,
-		};
-
-		while (true)
-		{
-			var res = space.IntersectRay(rq);
-			if (res.Keys.Count == 0) break;
-			var rid_hit = res["rid"].As<Rid>();
-			if (rid_hit == rid) break;
-			var e = rq.Exclude;
-			e.Add(rid_hit);
-			rq.Exclude = e;
-			if (res["collider"].AsGodotObject() is Obstacle o)
-			{
-				o.Dissolve();
-			}
-		}
-	}
 
 
 }
