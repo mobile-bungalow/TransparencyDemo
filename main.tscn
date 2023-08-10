@@ -1,10 +1,10 @@
-[gd_scene load_steps=43 format=3 uid="uid://druxfjfb3ac40"]
+[gd_scene load_steps=41 format=3 uid="uid://druxfjfb3ac40"]
 
 [ext_resource type="Script" path="res://Player.gd" id="1_u2hmh"]
 [ext_resource type="Script" path="res://NPC.gd" id="2_ck6fp"]
 [ext_resource type="Script" path="res://Obstacle.gd" id="2_fm77o"]
-[ext_resource type="Shader" path="res://dissolve.gdshader" id="3_vbef0"]
 [ext_resource type="QuadMesh" uid="uid://4nsoecmw3gqn" path="res://party.tres" id="4_jda1m"]
+[ext_resource type="Shader" path="res://z_cheat.gdshader" id="5_ilaki"]
 [ext_resource type="Script" path="res://BoxDemo.gd" id="6_fp05s"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tr11c"]
@@ -21,7 +21,15 @@ sky = SubResource("Sky_t437m")
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_txbyk"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kkyk6"]
+render_priority = 0
+shader = ExtResource("5_ilaki")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o15uu"]
+next_pass = SubResource("ShaderMaterial_kkyk6")
+
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_bt6j3"]
+material = SubResource("StandardMaterial3D_o15uu")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_xrpct"]
 
@@ -102,41 +110,10 @@ turbulence_noise_scale = 1.69
 turbulence_noise_speed_random = 0.52
 turbulence_influence_max = 0.2
 
-[sub_resource type="Gradient" id="Gradient_iotmq"]
-interpolation_mode = 2
-offsets = PackedFloat32Array(0.2097, 0.704708, 0.880171)
-colors = PackedColorArray(0.807843, 0.239216, 0, 1, 0.858984, 0.820763, 0.169345, 1, 1, 1, 1, 1)
-
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_3utq1"]
-gradient = SubResource("Gradient_iotmq")
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_jjtw7"]
-noise_type = 2
-frequency = 0.0074
-cellular_jitter = 0.7
-cellular_return_type = 2
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_x42fh"]
-noise = SubResource("FastNoiseLite_jjtw7")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_d7we6"]
-render_priority = 0
-shader = ExtResource("3_vbef0")
-shader_parameter/albedo = Color(1, 1, 1, 1)
-shader_parameter/point_size = 1.0
-shader_parameter/roughness = 1.0
-shader_parameter/metallic_texture_channel = null
-shader_parameter/specular = 0.5
-shader_parameter/metallic = 0.0
-shader_parameter/uv1_scale = Vector3(1, 1, 1)
-shader_parameter/uv1_offset = Vector3(0, 0, 0)
-shader_parameter/uv2_scale = Vector3(1, 1, 1)
-shader_parameter/uv2_offset = Vector3(0, 0, 0)
-shader_parameter/emission_color = SubResource("GradientTexture1D_3utq1")
-shader_parameter/noise_texture = SubResource("NoiseTexture2D_x42fh")
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_04lxi"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_hhix4"]
-material = SubResource("ShaderMaterial_d7we6")
+material = SubResource("ShaderMaterial_04lxi")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_o20od"]
 size = Vector3(0.0903035, 7.27637, 10.3997)
@@ -316,8 +293,7 @@ process_material = SubResource("ParticleProcessMaterial_fhbj4")
 draw_pass_1 = ExtResource("4_jda1m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="HexHalf3/Obstacle/Fader"]
-transform = Transform3D(0.983, 0, 0, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
-instance_shader_parameters/fade = 1.0
+transform = Transform3D(0.983, 0, -2.98023e-08, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
 mesh = SubResource("BoxMesh_hhix4")
 skeleton = NodePath("../..")
 
@@ -362,7 +338,6 @@ draw_pass_1 = ExtResource("4_jda1m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="HexHalf3/Obstacle3/Fader"]
 transform = Transform3D(0.983, 0, 0, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
-instance_shader_parameters/fade = 1.0
 mesh = SubResource("BoxMesh_hhix4")
 skeleton = NodePath("../..")
 
@@ -407,7 +382,6 @@ draw_pass_1 = ExtResource("4_jda1m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="HexHalf3/Obstacle2/Fader"]
 transform = Transform3D(0.983, 0, 0, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
-instance_shader_parameters/fade = 1.0
 mesh = SubResource("BoxMesh_hhix4")
 skeleton = NodePath("../..")
 
@@ -455,7 +429,6 @@ draw_pass_1 = ExtResource("4_jda1m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="HexHalf2/Obstacle/Fader"]
 transform = Transform3D(0.983, 0, 0, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
-instance_shader_parameters/fade = 1.0
 mesh = SubResource("BoxMesh_hhix4")
 skeleton = NodePath("../..")
 
@@ -500,7 +473,6 @@ draw_pass_1 = ExtResource("4_jda1m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="HexHalf2/Obstacle3/Fader"]
 transform = Transform3D(0.983, 0, 0, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
-instance_shader_parameters/fade = 1.0
 mesh = SubResource("BoxMesh_hhix4")
 skeleton = NodePath("../..")
 
@@ -545,7 +517,6 @@ draw_pass_1 = ExtResource("4_jda1m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="HexHalf2/Obstacle2/Fader"]
 transform = Transform3D(0.983, 0, 0, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
-instance_shader_parameters/fade = 1.0
 mesh = SubResource("BoxMesh_hhix4")
 skeleton = NodePath("../..")
 
@@ -593,7 +564,6 @@ draw_pass_1 = ExtResource("4_jda1m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="BoxDemo/Obstacle/Fader"]
 transform = Transform3D(0.983, 0, 0, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
-instance_shader_parameters/fade = 1.0
 mesh = SubResource("BoxMesh_hhix4")
 skeleton = NodePath("../..")
 
@@ -638,7 +608,6 @@ draw_pass_1 = ExtResource("4_jda1m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="BoxDemo/Obstacle2/Fader"]
 transform = Transform3D(0.983, 0, 0, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
-instance_shader_parameters/fade = 1.0
 mesh = SubResource("BoxMesh_hhix4")
 skeleton = NodePath("../..")
 
@@ -683,7 +652,6 @@ draw_pass_1 = ExtResource("4_jda1m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="BoxDemo/Obstacle3/Fader"]
 transform = Transform3D(0.983, 0, 0, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
-instance_shader_parameters/fade = 1.0
 mesh = SubResource("BoxMesh_hhix4")
 skeleton = NodePath("../..")
 
@@ -728,7 +696,6 @@ draw_pass_1 = ExtResource("4_jda1m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="BoxDemo/Obstacle4/Fader"]
 transform = Transform3D(0.987377, 0, -3.72529e-09, 0, 6.091, 0, 0, 0, 5.77671, 0, 0.385176, 0)
-instance_shader_parameters/fade = 1.0
 mesh = SubResource("BoxMesh_hhix4")
 skeleton = NodePath("../..")
 
@@ -813,7 +780,6 @@ draw_pass_1 = ExtResource("4_jda1m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Wall2/Obstacle/Fader"]
 transform = Transform3D(0.983, 0, 0, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
-instance_shader_parameters/fade = 1.0
 mesh = SubResource("BoxMesh_hhix4")
 skeleton = NodePath("../..")
 
@@ -858,7 +824,6 @@ draw_pass_1 = ExtResource("4_jda1m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Wall2/Obstacle2/Fader"]
 transform = Transform3D(0.983, 0, 0, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
-instance_shader_parameters/fade = 1.0
 mesh = SubResource("BoxMesh_hhix4")
 skeleton = NodePath("../..")
 
@@ -902,7 +867,6 @@ draw_pass_1 = ExtResource("4_jda1m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Wall2/Obstacle3/Fader"]
 transform = Transform3D(0.983, 0, 0, 0, 6.091, 0, 0, 0, 10, 0, 0.385176, 0)
-instance_shader_parameters/fade = 1.0
 mesh = SubResource("BoxMesh_hhix4")
 skeleton = NodePath("../..")
 
