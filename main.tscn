@@ -118,7 +118,7 @@ shader_parameter/uv2_scale = null
 shader_parameter/uv2_offset = null
 shader_parameter/fade_enabled = true
 shader_parameter/alpha_clip = 0.1
-shader_parameter/fade_intensity = 777.2
+shader_parameter/fade_intensity = 5.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_hhix4"]
 material = SubResource("ShaderMaterial_d7we6")

@@ -27,7 +27,7 @@ const mat4 bayerIndex = mat4(
 
 
 uniform float alpha_clip : hint_range(0.001, 1.0, 0.01) = 0.1;
-uniform float fade_intensity : hint_range(1.0, 10000.0, 0.1) = 10.0;
+uniform float fade_intensity : hint_range(1.0, 10.0, 0.1) = 5;
 // number of world coordinates to actually check
 global uniform int run_length;
 
@@ -64,7 +64,7 @@ void fragment() {
 				dist = length(char_coord.xy - FRAGCOORD.xy);
 			
 	
-				alpha = smoothstep(0.0, fade_intensity, dist);			
+				alpha = smoothstep(0.0, 1.0, dist * fade_intensity / length(VIEWPORT_SIZE));			
 					
 				ivec2 uv = ivec2(int(FRAGCOORD.x) %  4, int(FRAGCOORD.y) % 4);
 				float bayer = bayerIndex[uv.x][uv.y];
