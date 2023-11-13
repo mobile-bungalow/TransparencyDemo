@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://NPC.gd" id="2_ck6fp"]
 [ext_resource type="Script" path="res://Obstacle.gd" id="2_fm77o"]
 [ext_resource type="QuadMesh" uid="uid://4nsoecmw3gqn" path="res://party.tres" id="4_jda1m"]
-[ext_resource type="Shader" path="res://z_cheat.gdshader" id="6_bwxb3"]
+[ext_resource type="Shader" path="res://pinhole.gdshader" id="6_bwxb3"]
 [ext_resource type="Script" path="res://BoxDemo.gd" id="6_fp05s"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tr11c"]
