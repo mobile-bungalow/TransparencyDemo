@@ -1,3 +1,3 @@
 # Transparency shader demos
 
-## this repo contains several different transparency shader demons on different branches, each branch demonstrates a different way to achieve a dollhousing effect. Master contains a c# version of the GD script code which does not change much between the branches.
+This branch contains the x-ray shader code under z_cheat.gdshader, it is applied as a second pass on top of all obstacles.
